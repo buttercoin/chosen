@@ -133,7 +133,6 @@ class AbstractChosen
     escapedSearchText = searchText.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&")
     regexAnchor = if @search_contains then "" else "^"
     regex = new RegExp(regexAnchor + escapedSearchText, 'i')
-    zregex = new RegExp(escapedSearchText, 'i')
 
     for option in @results_data
 
@@ -150,7 +149,7 @@ class AbstractChosen
           results_group = @results_data[option.group_array_index]
           results += 1 if results_group.active_options is 0 and results_group.search_match
           results_group.active_options += 1
-                
+
         unless option.group and not @group_search
 
           option.search_text = if option.group then option.label else option.html
@@ -159,9 +158,14 @@ class AbstractChosen
 
           if option.search_match
             if searchText.length
-              startpos = option.search_text.search zregex
-              text = option.search_text.substr(0, startpos + searchText.length) + '</em>' + option.search_text.substr(startpos + searchText.length)
-              option.search_text = text.substr(0, startpos) + '<em>' + text.substr(startpos)
+              zregex = new RegExp(escapedSearchText, 'ig');
+              while (match = zregex.exec(option.search_text))?
+                startpos = match.index;
+                aroundText = option.search_text.substr Math.max(0, startpos - 5), (searchText.length + 10)
+                if aroundText.indexOf('&nbsp;') isnt -1 then continue
+                text = option.search_text.substr(0, startpos + searchText.length) + '</em>' + option.search_text.substr(startpos + searchText.length)
+                option.search_text = text.substr(0, startpos) + '<em>' + text.substr(startpos)
+                break
 
             results_group.group_match = true if results_group?
           
