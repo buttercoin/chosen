@@ -32,15 +32,14 @@ class Chosen extends AbstractChosen
 
     container_props =
       'class': container_classes.join ' '
-      'style': "width: #{this.container_width()};"
       'title': @form_field.title
 
     container_props.id = @form_field.id.replace(/[^\w]/g, '_') + "_chosen" if @form_field.id.length
 
-    @container = ($ "<div />", container_props)
+    @container = ($ "<div />", container_props).css 'width', this.container_width()
 
     if @is_multiple
-      @container.html '<ul class="chosen-choices"><li class="search-field"><input type="text" value="' + @default_text + '" class="default" autocomplete="off" style="width:25px;" /></li></ul><div class="chosen-drop"><ul class="chosen-results"></ul></div>'
+      @container.html '<ul class="chosen-choices"><li class="search-field"><input type="text" value="' + @default_text + '" class="default" autocomplete="off"/></li></ul><div class="chosen-drop"><ul class="chosen-results"></ul></div>'
     else
       @container.html '<a class="chosen-single chosen-default" tabindex="-1"><span>' + @default_text + '</span><div><b></b></div></a><div class="chosen-drop"><div class="chosen-search"><input type="text" autocomplete="off" /></div><ul class="chosen-results"></ul></div>'
 
@@ -476,13 +475,17 @@ class Chosen extends AbstractChosen
       h = 0
       w = 0
 
-      style_block = "position:absolute; left: -1000px; top: -1000px; display:none;"
+      style_block = 
+        position: 'absolute'
+        left: '-1000px'
+        top: '-1000px'
+        display: 'none'
       styles = ['font-size','font-style', 'font-weight', 'font-family','line-height', 'text-transform', 'letter-spacing']
 
       for style in styles
-        style_block += style + ":" + @search_field.css(style) + ";"
+        style_block[style] = @search_field.css style
 
-      div = $('<div />', { 'style' : style_block })
+      div = $('<div />').css style_block
       div.text @search_field.val()
       $('body').append div
 
